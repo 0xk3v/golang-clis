@@ -15,3 +15,6 @@ build: vet
 
 clean:
 	go clean
+
+windows:
+	GOOS=windows go build
