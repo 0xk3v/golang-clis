@@ -1,6 +1,7 @@
 package todo_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/0xk3v/golang-clis/todo"
@@ -68,5 +69,40 @@ func TestDelete(t *testing.T) {
 
 	if l[1].Task != tasks[2] {
 		t.Errorf("Expected %q, got %q instead.", tasks[2], l[1].Task)
+	}
+}
+
+// TestGet tests the Get() method of List type
+func TestSaveGet(t *testing.T) {
+	l1 := todo.List{}
+	l2 := todo.List{}
+
+	taskName := "Drink coffee"
+	l1.Add(taskName)
+
+	if l1[0].Task != taskName {
+		t.Errorf("Expected %q, got %q instead.", taskName, l1[0].Task)
+	}
+
+	tf, err := os.CreateTemp("", "")
+	if err != nil {
+		t.Fatalf("Error creating temp file: %s", err)
+	}
+	defer os.Remove(tf.Name())
+
+	if err := l1.Save(tf.Name()); err != nil {
+		t.Fatalf("Error saving list to file: %s", err)
+	}
+
+	if err := l2.Get(tf.Name()); err != nil {
+		t.Fatalf("Error getting list from file: %s", err)
+	}
+
+	if l1[0].Task != l2[0].Task {
+		t.Errorf("Expected %q, got %q instead.", l2[0].Task, l1[0].Task)
+	}
+
+	if l1[0].Done != l2[0].Done {
+		t.Errorf("Expected %q, got %q instead.", l2[0].Task, l1[0].Task)
 	}
 }
