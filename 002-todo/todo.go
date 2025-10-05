@@ -31,28 +31,28 @@ func (l *List) Add(task string) {
 }
 
 // Complete marks a given task as 'Done'
-func (l *List) Complete(i int) error {
+func (l *List) Complete(id int) error {
 	ls := *l
 
-	if i <= 0 || i > len(ls) {
-		return fmt.Errorf("item %d does not exist", i)
+	if id <= 0 || id > len(ls) {
+		return fmt.Errorf("item %d does not exist", id)
 	}
 
-	ls[i-1].Done = true
-	ls[i-1].CompletedAt = time.Now()
+	ls[id-1].Done = true
+	ls[id-1].CompletedAt = time.Now()
 
 	return nil
 }
 
 // Delete removes an item from the list of ToDos
-func (l *List) Delete(i int) error {
+func (l *List) Delete(id int) error {
 	ls := *l
 
-	if i <= 0 || i > len(ls) {
-		return fmt.Errorf("item %d does not exist", i)
+	if id <= 0 || id > len(ls) {
+		return fmt.Errorf("item %d does not exist", id)
 	}
 
-	*l = append(ls[:i-1], ls[i:]...)
+	*l = append(ls[:id-1], ls[id:]...)
 
 	return nil
 }
@@ -84,4 +84,23 @@ func (l *List) Get(filename string) error {
 	}
 
 	return json.Unmarshal(file, l)
+}
+
+// String prints out a formatted list
+// Implements the fmt.Stringer interface
+func (l *List) String() string {
+	formatted := ""
+
+	for index, item := range *l {
+
+		prefix := "  "
+		if item.Done {
+			prefix = "X "
+		}
+
+		formatted += fmt.Sprintf("%s%d: %s\n", prefix, index+1, item.Task)
+
+	}
+
+	return formatted
 }
